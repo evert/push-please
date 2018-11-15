@@ -14,6 +14,7 @@ normative:
   RFC7240:
   I-D.ietf-httpbis-header-structure:
   W3C.REC-selectors-3-20181106:
+  W3C.CR-preload-20171026:
 
 informative:
   RFC4287:
@@ -212,7 +213,6 @@ Prefer: push="item / ( author, <https://example.org/custom-rel> ),
   icon"
 ~~~~
 
-
 # Server pushes
 
 When a server receives the `Prefer(-Push)` header, it can choose to push the
@@ -223,10 +223,25 @@ link-relationships. The server must de-duplicate these responses.
 
 A server is free to ignore push-requests.
 
-## ABNF syntax
+# ABNF syntax
 
 TODO when format is picked
 
+# Using with "preload" relationship types
+
+{{W3C.CR-preload-20171026}} defines a "preload" relationship type, that an
+origin can use to inform a client to start fetching a resource, or a proxy
+to initiate a HTTP/2 push.
+
+Clients interacting with servers or proxies implementing "preload" could
+discard `Prefer-Push: preload`, as it would be a no-op, but this is not
+recommended as servers and proxies could still take this as a hint that
+a Push is desired.
+
+A distinct difference between `preload` and `Prefer-Push` is that `preload`
+can be used by origin servers to inform clients and intermediates to fetch
+and potentially push resources optimistically, but fundamentally `Prefer-Push`
+is a completely client-driven mechanism.
 
 # Security considerations
 
