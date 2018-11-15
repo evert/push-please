@@ -248,18 +248,50 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    Prefer: push="item / ( author, <https://example.org/custom-rel> ),
      icon"
 
-4.  Security considerations
+4.  Server pushes
 
-   TODO
+   When a server receives the "Prefer(-Push)" header, it can choose to
+   push the related resources.
 
-   Note DDOS problems with arbitrary pushes.  Servers MUST restrict
-   pushes and/or depth.
+   It's possible for a resource to be references multiple times via
+   different link-relationships.  The server must de-duplicate these
+   responses.
 
-5.  Acknowledgements
+   A server is free to ignore push-requests.
 
-6.  References
+4.1.  ABNF syntax
 
-6.1.  Normative References
+   TODO when format is picked
+
+5.  Security considerations
+
+   The Prefer-Push mechanism can potentially result in a large number of
+   resources being pushed.  This can result in a Denial-of-Service
+   attack.
+
+   A server must set reasonable restrictions around the amount of pushes
+   it sends.  In the case of N-Depth pushes, servers SHOULD also set
+   restrictions around the depth it supports.
+
+
+
+
+
+Evert Pot                 Expires May 19, 2019                  [Page 5]
+
+Internet-Draft    HTTP-client suggested Push Preference    November 2018
+
+
+6.  IANA considerations
+
+   TODO: Put registry updates where a decision is made on Prefer/Prefer-
+   Push.
+
+7.  Acknowledgements
+
+8.  References
+
+8.1.  Normative References
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
@@ -275,13 +307,6 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               DOI 10.17487/RFC7540, May 2015,
               <https://www.rfc-editor.org/info/rfc7540>.
 
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 5]
-
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
-
-
    [RFC8288]  Nottingham, M., "Web Linking", RFC 8288,
               DOI 10.17487/RFC8288, October 2017,
               <https://www.rfc-editor.org/info/rfc8288>.
@@ -293,7 +318,7 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               3-20181106, November 2018,
               <https://www.w3.org/TR/2018/REC-selectors-3-20181106>.
 
-6.2.  Informative References
+8.2.  Informative References
 
    [HAL]      Kelly, M., "JSON Hypertext Application Language", June
               2012,
@@ -305,6 +330,13 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    [RFC4287]  Nottingham, M., Ed. and R. Sayre, Ed., "The Atom
               Syndication Format", RFC 4287, DOI 10.17487/RFC4287,
               December 2005, <https://www.rfc-editor.org/info/rfc4287>.
+
+
+
+Evert Pot                 Expires May 19, 2019                  [Page 6]
+
+Internet-Draft    HTTP-client suggested Push Preference    November 2018
+
 
    [S-expression]
               "S-expressions", n.d.,
@@ -333,4 +365,28 @@ Author's Address
 
 
 
-Evert Pot                 Expires May 19, 2019                  [Page 6]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Evert Pot                 Expires May 19, 2019                  [Page 7]

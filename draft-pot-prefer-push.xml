@@ -133,7 +133,7 @@ Prefer-Push: item, author, "https://example.org/custom-rel"
 
 <figure><artwork><![CDATA[
 GET /articles HTTP/1.1
-Prefer: push="item, author, \"https://example.org/custom-rel\"" 
+Prefer: push="item, author, \"https://example.org/custom-rel\""
 ]]></artwork></figure>
 
 </section>
@@ -146,7 +146,7 @@ depths.</t>
 
 <t>The following example requests for the server to push the resources linked
 via the “item” and “icon” relation. For each of the resources linked via
-the “item” relationship, it also requests the “author” relationship and 
+the “item” relationship, it also requests the “author” relationship and
 custom link relationship to be pushed.</t>
 
 <section anchor="example-using-prefer-push-header-1" title="Example using Prefer-Push header">
@@ -165,7 +165,7 @@ Prefer-Push: item(author, "https://example.org/custom-rel"), icon
 
 <figure><artwork><![CDATA[
 GET /articles HTTP/1.1
-Prefer: push="item(author, \"https://example.org/custom-rel\"), icon" 
+Prefer: push="item(author, \"https://example.org/custom-rel\"), icon"
 ]]></artwork></figure>
 
 </section>
@@ -187,7 +187,7 @@ Prefer-Push: (item(author "https://example.org/custom-rel") icon)
 
 <figure><artwork><![CDATA[
 GET /articles HTTP/1.1
-Prefer: push="(item(author \"https://example.org/custom-rel\") icon)" 
+Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
 ]]></artwork></figure>
 
 </section>
@@ -212,7 +212,7 @@ Prefer-Push: item, item > author, item >
 <figure><artwork><![CDATA[
 GET /articles HTTP/1.1
 Prefer: push="item, item > author, item >
-  url(\"https://example.org/custom-rel\"), icon" 
+  url(\"https://example.org/custom-rel\"), icon"
 ]]></artwork></figure>
 
 </section>
@@ -241,12 +241,35 @@ Prefer: push="item / ( author, <https://example.org/custom-rel> ),
 </section>
 </section>
 </section>
+<section anchor="server-pushes" title="Server pushes">
+
+<t>When a server receives the <spanx style="verb">Prefer(-Push)</spanx> header, it can choose to push the
+related resources.</t>
+
+<t>It’s possible for a resource to be references multiple times via different
+link-relationships. The server must de-duplicate these responses.</t>
+
+<t>A server is free to ignore push-requests.</t>
+
+<section anchor="abnf-syntax" title="ABNF syntax">
+
+<t>TODO when format is picked</t>
+
+</section>
+</section>
 <section anchor="security-considerations" title="Security considerations">
 
-<t>TODO</t>
+<t>The Prefer-Push mechanism can potentially result in a large number of
+resources being pushed. This can result in a Denial-of-Service attack.</t>
 
-<t>Note DDOS problems with arbitrary pushes. Servers MUST restrict pushes and/or
-depth.</t>
+<t>A server must set reasonable restrictions around the amount of pushes it
+sends. In the case of N-Depth pushes, servers SHOULD also set restrictions
+around the depth it supports.</t>
+
+</section>
+<section anchor="iana-considerations" title="IANA considerations">
+
+<t>TODO: Put registry updates where a decision is made on Prefer/Prefer-Push.</t>
 
 </section>
 <section anchor="acknowledgements" title="Acknowledgements">
@@ -309,60 +332,65 @@ depth.</t>
   </back>
 
 <!-- ##markdown-source:
-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
-80ul/gt2zp1V/BgAAA==
+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
+PHh35i+rn3Hofj/a1f/rFwz4ddSbIM/vIYjnQq5BXWkKZXMwKrQ0Q0y1odQG
+wpiNmNO4dxZcfxi5S/pXojP2BtlPPMbvttLxIGT6tqNGpBfENLk3MF6wfS7U
+1AHFtHnbzUKEvH4A6QrOLtUFaIpbHI+hQ54bcakdGYBzNKDuV22/F3P7vhAJ
+IWIgpLN+Yyp2BKd4Zx7vDCHa3UvaRYjOboXgRRyD6gNFJ3twtrzom4CYBvrD
+NADF4CzUVmCkoZbrTnF/GIaYKMsJ4sV6aTDGUhPAwRhT4IPBURRNecj+QByD
+h1yYMsYMug6HOgq724I8HJAckyyD5jsySmYYd1I05ph7bjG8lP6/zce9h6bj
+YwQLof82Wbn38KSMdnwyN5GB+Dy8Y5Buizr29lOZETdGlnSK5uX2xqitqIM2
+r42paMPnA8W+ezfUGabKB6HwweHaG3jqy+FiLz3++uHaseIB4Qp2fCFcLxeL
+LkpzgHrFNdYPuhju0QsYG+1XNCsvqUGOtVuFzoXnGYh7KtrbwCgYAfrcPSFG
+3CAQWcgmERggR8S36SomdFpQ3tS5+/rxDeWJfsufuioVvgq6Us33/q85+nnT
+vlrioln881k/iVcKVe1+6g6Z01WmDpPFR1/9NmGSU7nX+eF3nz/5T/LxGE76
+doH5H41pA4GRZRF6gba5+WWjB9M+Cow2t5EeY3e7x7543Pf+JtxKpBtLw/ug
+qRBcpodtLg2THwzAg8utUMr7NrtrcfimwVE/0TMED5LJsBXgtrxrbwqcHNU4
+aecCHe8EBnciIJy4mWpyrdkCsy6pKeO/jbS9SRgo5i/OX/UV5eLogm/nBpCs
+TEq9U/Arxi7j+f7XYQyug5UBzkMQ9jcg5MXK0pxq6I6EDMXx+YZa5nS93l8O
+ib7VWmpCUWx/QndBgoYvH2nM6XliV8kiXDbQra9Kb4YOYG8Rh9Za0d8Gltw4
+ots3aTtJ0n0UI0EV+MhsG9PXeFBumbk4wekwwGH9PDkapPk4KnNycXLxl7Oj
+ODKy0l6TGGgKJGGoGlSVrUMg5On8fP6hXxGPmbxsSNga7VO9lU2V8T3RHd/0
+ADogce4KTKwn+BhCMR1EhFXMUxrxc52tw91m+MPEEk4T4j9ikAVUlBsAAA==
 
 -->
 

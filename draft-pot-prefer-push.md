@@ -9,7 +9,7 @@ author:
     email: me@evertpot.com
     uri: https://evertpot.com/
 normative:
-  RFC7540: 
+  RFC7540:
   RFC8288:
   RFC7240:
   I-D.ietf-httpbis-header-structure:
@@ -47,7 +47,7 @@ client, in anticipation that the client will need them in the near future.
 This mechanism is completely controlled by the server, and it is up to
 implementors of services to anticipate what resources a client might need
 next. Some implementations of this feature attempt to intelligently guess
-which resources a client might need based on past behavior. 
+which resources a client might need based on past behavior.
 
 This specification defines a new HTTP header that allows a client to inform a
 server of resources they will require next based on a link relation type
@@ -65,7 +65,7 @@ include:
 * The [hal] format, which provides an `_embedded` element to embedding bodies
   of resources in other resources.
 * The [json-api] format, which provides a `included` property to embed
-  resources. 
+  resources.
 
 Embedding resource responses in other resources has two major peformance
 advantages:
@@ -119,7 +119,7 @@ Prefer-Push: item, author, "https://example.org/custom-rel"
 
 ~~~~
 GET /articles HTTP/1.1
-Prefer: push="item, author, \"https://example.org/custom-rel\"" 
+Prefer: push="item, author, \"https://example.org/custom-rel\""
 ~~~~
 
 ## N-depth pushes
@@ -130,7 +130,7 @@ depths.
 
 The following example requests for the server to push the resources linked
 via the "item" and "icon" relation. For each of the resources linked via
-the "item" relationship, it also requests the "author" relationship and 
+the "item" relationship, it also requests the "author" relationship and
 custom link relationship to be pushed.
 
 ### Example using Prefer-Push header
@@ -148,13 +148,13 @@ Prefer-Push: item(author, "https://example.org/custom-rel"), icon
 
 ~~~~
 GET /articles HTTP/1.1
-Prefer: push="item(author, \"https://example.org/custom-rel\"), icon" 
+Prefer: push="item(author, \"https://example.org/custom-rel\"), icon"
 ~~~~
 
 ## N-depth pushes with S-expression syntax
 
 The following example expresses the same information, but instead of a custom
-format it uses {{S-expression}}. 
+format it uses {{S-expression}}.
 
 ### Example using Prefer-Push header
 
@@ -167,7 +167,7 @@ Prefer-Push: (item(author "https://example.org/custom-rel") icon)
 
 ~~~~
 GET /articles HTTP/1.1
-Prefer: push="(item(author \"https://example.org/custom-rel\") icon)" 
+Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
 ~~~~
 
 ## N-depth pushes with CSS syntax
@@ -189,7 +189,7 @@ Prefer-Push: item, item > author, item >
 ~~~~
 GET /articles HTTP/1.1
 Prefer: push="item, item > author, item >
-  url(\"https://example.org/custom-rel\"), icon" 
+  url(\"https://example.org/custom-rel\"), icon"
 ~~~~
 
 ## N-depth pushes with SparQL property paths
@@ -212,12 +212,34 @@ Prefer: push="item / ( author, <https://example.org/custom-rel> ),
   icon"
 ~~~~
 
+
+# Server pushes
+
+When a server receives the `Prefer(-Push)` header, it can choose to push the
+related resources.
+
+It's possible for a resource to be references multiple times via different
+link-relationships. The server must de-duplicate these responses.
+
+A server is free to ignore push-requests.
+
+## ABNF syntax
+
+TODO when format is picked
+
+
 # Security considerations
 
-TODO
+The Prefer-Push mechanism can potentially result in a large number of
+resources being pushed. This can result in a Denial-of-Service attack.
 
-Note DDOS problems with arbitrary pushes. Servers MUST restrict pushes and/or
-depth.
+A server must set reasonable restrictions around the amount of pushes it
+sends. In the case of N-Depth pushes, servers SHOULD also set restrictions
+around the depth it supports.
+
+# IANA considerations
+
+TODO: Put registry updates where a decision is made on Prefer/Prefer-Push.
 
 # Acknowledgements
 
