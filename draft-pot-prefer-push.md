@@ -13,7 +13,6 @@ normative:
   RFC8288:
   RFC7240:
   I-D.ietf-httpbis-header-structure:
-  W3C.REC-selectors-3-20181106:
   W3C.CR-preload-20171026:
 
 informative:

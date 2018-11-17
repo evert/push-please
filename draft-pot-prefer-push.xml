@@ -7,7 +7,7 @@
 <!ENTITY RFC8288 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.8288.xml">
 <!ENTITY RFC7240 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.7240.xml">
 <!ENTITY I-D.ietf-httpbis-header-structure SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-httpbis-header-structure.xml">
-<!ENTITY W3C.REC-selectors-3-20181106 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml4/reference.W3C.REC-selectors-3-20181106.xml">
+<!ENTITY W3C.CR-preload-20171026 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml4/reference.W3C.CR-preload-20171026.xml">
 <!ENTITY RFC4287 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml/reference.RFC.4287.xml">
 ]>
 
@@ -192,54 +192,6 @@ Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
 
 </section>
 </section>
-<section anchor="n-depth-pushes-with-css-syntax" title="N-depth pushes with CSS syntax">
-
-<t>A different suggestion was made using a combination of a subset of CSS3
-selector syntax <xref target="W3C.REC-selectors-3-20181106"/> combined with the CSS
-syntax of specifing urls.</t>
-
-<section anchor="example-using-prefer-push-header-3" title="Example using Prefer-Push header">
-
-<figure><artwork><![CDATA[
-GET /articles HTTP/1.1
-Prefer-Push: item, item > author, item >
-  url("https://example.org/custom-rel"), icon
-]]></artwork></figure>
-
-</section>
-<section anchor="example-using-prefer-header-3" title="Example using Prefer header">
-
-<figure><artwork><![CDATA[
-GET /articles HTTP/1.1
-Prefer: push="item, item > author, item >
-  url(\"https://example.org/custom-rel\"), icon"
-]]></artwork></figure>
-
-</section>
-</section>
-<section anchor="n-depth-pushes-with-sparql-property-paths" title="N-depth pushes with SparQL property paths">
-
-<t>The following format is inspired by SparQL property paths.</t>
-
-<section anchor="example-using-prefer-push-header-4" title="Example using Prefer-Push header">
-
-<figure><artwork><![CDATA[
-GET /articles HTTP/1.1
-Prefer-Push: item / ( author, <https://example.org/custom-rel> ),
-  icon
-]]></artwork></figure>
-
-</section>
-<section anchor="example-using-prefer-header-4" title="Example using Prefer header">
-
-<figure><artwork><![CDATA[
-GET /articles HTTP/1.1
-Prefer: push="item / ( author, <https://example.org/custom-rel> ),
-  icon"
-]]></artwork></figure>
-
-</section>
-</section>
 </section>
 <section anchor="server-pushes" title="Server pushes">
 
@@ -251,11 +203,28 @@ link-relationships. The server must de-duplicate these responses.</t>
 
 <t>A server is free to ignore push-requests.</t>
 
+</section>
 <section anchor="abnf-syntax" title="ABNF syntax">
 
 <t>TODO when format is picked</t>
 
 </section>
+<section anchor="using-with-preload-relationship-types" title="Using with “preload” relationship types">
+
+<t><xref target="W3C.CR-preload-20171026"/> defines a “preload” relationship type, that an
+origin can use to inform a client to start fetching a resource, or a proxy
+to initiate a HTTP/2 push.</t>
+
+<t>Clients interacting with servers or proxies implementing “preload” could
+discard <spanx style="verb">Prefer-Push: preload</spanx>, as it would be a no-op, but this is not
+recommended as servers and proxies could still take this as a hint that
+a Push is desired.</t>
+
+<t>A distinct difference between <spanx style="verb">preload</spanx> and <spanx style="verb">Prefer-Push</spanx> is that <spanx style="verb">preload</spanx>
+can be used by origin servers to inform clients and intermediates to fetch
+and potentially push resources optimistically, but fundamentally <spanx style="verb">Prefer-Push</spanx>
+is a completely client-driven mechanism.</t>
+
 </section>
 <section anchor="security-considerations" title="Security considerations">
 
@@ -287,7 +256,7 @@ around the depth it supports.</t>
 &RFC8288;
 &RFC7240;
 &I-D.ietf-httpbis-header-structure;
-&W3C.REC-selectors-3-20181106;
+&W3C.CR-preload-20171026;
 
 
     </references>
@@ -332,65 +301,68 @@ around the depth it supports.</t>
   </back>
 
 <!-- ##markdown-source:
-H4sIAKfr7VsAA8VZbW8buRH+zl9BKB/OCbSS7dxdAqE9VImds1vHdiMXV6BX
-1NQuJfG8u9wuuXbUIP3tfWbIfZHz5hYJaiSGtOTODGeeeWaGTpJEZMrrmTzc
-P3ieHBwkBz8Ib3yOJ6OTq6vLJM2NLr10zXqtndeZvGzcRl7WeqVrXaZ6JDKb
-lqrAC1mtVj6pLP7zclJha7K/L1JoWNt6O5POZ0I1fmPrmZAywX8pTelm8vhW
-115eWs+PdKFMPpOF/oOm5xA5SW3BS01tZnLjfeVm0+lwdSpKWxfKm1tNst+8
-evnsh+/348fnh8+ft08Pw9PT5GhitF8lJGxpXLLRKoPRztdN6puapfzy9OXk
-zfHLxOlcp97WLnmakKcODvZ/nAlhytU9nd8fPn9GH0/mZzO2N4EjNyof8Zfo
-2T8uLs7lybaC8fqtl/Oqyg18ZGwpz1S5btRa8/beU/QTnDx6bW60/JPO822Q
-2YXvMNn/Mdl/FhSpeq197yhvbe74uBNbr6cbX+TTEK4bkpT85myZwEyKlmT7
-kvnlaXcCXlaVuX+IGTZ9VB+9gP2sLLhoin2LRL8FNJzDSXvvODzccc9ouM+N
-PqpAl5M7c2MqnRnFWujbdPiiEEmSSLVEPFXqhbi6OLoIzwqTZbkW4pE8LX1t
-M4Sb9xPep4fy3buInffvpcpze+ekkk7XwJr0VhKoZa3/2SAdsFJm+OIqGKod
-LStJYkRImzHAjS3epKYK8fUb5fFLy5hXdybPZamRV3hY0HZaLLWq5aohFE5g
-+cY45EK6UaVx2OMk4F7l2ut8i490hjyHhOWWXw6mjtk042l7U8EyYeidAkoB
-Y2lXvM+k0erWRi3vyEIcyTY1LarW0sKsN55NFSVQO5ELW2jZCeXjsVxP5q60
-Iuul8l4XlScdpoTBuVljM+xew39O3G1Muvm8NrlUDr/hu0o5L5d6o26NrVu/
-uEqnZtWmT6ZXpmQ5pb7jSMiQ1sHxXTijFraK8CmViBHGAXpz4M5tCBEF3NQU
-GSRsZ5GSuSlvsJjH6CKnBeOHCOf9+wmB7A2vKULca1Vu2aokiOhCUNX21mSI
-Hfm0DzXs08UygCOcpsWaWNrMaLdrLjxspcXeutvMKxM5J8gUsFC/VRSxLk53
-G10K1e0ktHQEmElFvhqlBC/OkR11o4k8DtK6sIMQ07zJQIbiibyCzXNvC7nY
-llkboFdMBiHHiCuRYxwZlBKbQdD1/Ori9QyxqbfX8q+vz5D8OgAMmLK11Ap4
-cc3S1pkpAddJVPQ3kNffZaCasQywik6lJJXX/2BHZjq7bgV23oWktQz+hLp7
-Ho3+7B51CltO/LRWeR3dAZ14SnS/7ZRC00CmOO4M6ULR08qHVsgNQuPvrCzU
-b/BKpdkGlGOhslskMyqIQxAOJvKUkhkUF9AsywaKAsptU2a+NpVjeISESOGq
-QqHAgPFgTN6hjumOmJhYBUyMXYByZ+JEHE7kz7rUNcKMQxBh+l1Xkmi78rpE
-Cve00eZRx6+kAxsAKhhskA0gONcUJJSBsu6VMBZaE+CkzMDxDXJ8y+Sg3TCV
-VO7A3RbPYIdxrkFW8NnCyQOTE0XVBdUUr8OTFDoAC0Wpb0Egd/SJ0U7iW0z1
-xxzD+FQ1WKOAgU0Rp5LaFElJpvJQHaI/YeaLLY6KZbWmE8UKxCUGbZEHdZGy
-ytoalOk8LFIA/r+gsUdud0Y3FsZ/5+iUziwRO0qYIcuz3EHyDIkXeW8pEv3r
-YxF9fY96XKQFRHhEjEq4hzLniSe9uuH4tygk8/Vb4yhgXGCJcGvVcQxccFoG
-ML05XlxJJBR8CBsTNpICISntP3C0pEAgz1C4VqYrfqYWO4w8kXBw4wJ69C5b
-j6k6MrkDbzs+a+uD4PrA3KVDbY8wDZlO0mKNIOAERllZqjHjUGraVKCXSJgt
-EUaOAlkzrDO7XcFNSWXKDNoDriTEO7GcBc4BzT45t14/eTLj14Ny0goPusDZ
-jlsEBQ5xDLScucg6JMREXpBBtkT0NrbJMwGIbUMTcr+0AtgNF9B2FGDRFIS0
-qetQ03PDEwJsE22HgmLM9BZpO9rUmsTUPChJoMwwWSQ0ZVzHw7aqkcCwDxqE
-ait8pWp0xT4wGnkgvt++Gpu5Q2rmwIXxYKkiGiB5HJADEU4vd06PsabhMrEk
-ctUya7ounYLxSC6YIJNMV37DQQVPEO2AObkoegl3u1g1WSRriz1IpNf+bVl1
-MxUCQ72NKLQqB+D4mG8CrZJcgLhxwfuMzJ1kWdUYnxhgcDy1MF1rQEd51Bby
-mCoDPVFNbLYC6iJYSF0oKqMzBH7UrpIufrzoG4kTltIKQIv0xemLm6d/40f8
-fHwlp6pGg0qdBlPkweRADIycIVV0MY7z0hgDVzslhGPxgJA2Ds1IguwfBbmf
-PHh35i+rn3Hofj/a1f/rFwz4ddSbIM/vIYjnQq5BXWkKZXMwKrQ0Q0y1odQG
-wpiNmNO4dxZcfxi5S/pXojP2BtlPPMbvttLxIGT6tqNGpBfENLk3MF6wfS7U
-1AHFtHnbzUKEvH4A6QrOLtUFaIpbHI+hQ54bcakdGYBzNKDuV22/F3P7vhAJ
-IWIgpLN+Yyp2BKd4Zx7vDCHa3UvaRYjOboXgRRyD6gNFJ3twtrzom4CYBvrD
-NADF4CzUVmCkoZbrTnF/GIaYKMsJ4sV6aTDGUhPAwRhT4IPBURRNecj+QByD
-h1yYMsYMug6HOgq724I8HJAckyyD5jsySmYYd1I05ph7bjG8lP6/zce9h6bj
-YwQLof82Wbn38KSMdnwyN5GB+Dy8Y5Buizr29lOZETdGlnSK5uX2xqitqIM2
-r42paMPnA8W+ezfUGabKB6HwweHaG3jqy+FiLz3++uHaseIB4Qp2fCFcLxeL
-LkpzgHrFNdYPuhju0QsYG+1XNCsvqUGOtVuFzoXnGYh7KtrbwCgYAfrcPSFG
-3CAQWcgmERggR8S36SomdFpQ3tS5+/rxDeWJfsufuioVvgq6Us33/q85+nnT
-vlrioln881k/iVcKVe1+6g6Z01WmDpPFR1/9NmGSU7nX+eF3nz/5T/LxGE76
-doH5H41pA4GRZRF6gba5+WWjB9M+Cow2t5EeY3e7x7543Pf+JtxKpBtLw/ug
-qRBcpodtLg2THwzAg8utUMr7NrtrcfimwVE/0TMED5LJsBXgtrxrbwqcHNU4
-aecCHe8EBnciIJy4mWpyrdkCsy6pKeO/jbS9SRgo5i/OX/UV5eLogm/nBpCs
-TEq9U/Arxi7j+f7XYQyug5UBzkMQ9jcg5MXK0pxq6I6EDMXx+YZa5nS93l8O
-ib7VWmpCUWx/QndBgoYvH2nM6XliV8kiXDbQra9Kb4YOYG8Rh9Za0d8Gltw4
-ots3aTtJ0n0UI0EV+MhsG9PXeFBumbk4wekwwGH9PDkapPk4KnNycXLxl7Oj
-ODKy0l6TGGgKJGGoGlSVrUMg5On8fP6hXxGPmbxsSNga7VO9lU2V8T3RHd/0
-ADogce4KTKwn+BhCMR1EhFXMUxrxc52tw91m+MPEEk4T4j9ikAVUlBsAAA==
+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
+aU0udbEK94Phcn+BoAnxH+UEuGrTGgAA
 
 -->
 

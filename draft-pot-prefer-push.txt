@@ -203,17 +203,17 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    GET /articles HTTP/1.1
    Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
 
-3.4.  N-depth pushes with CSS syntax
+4.  Server pushes
 
-   A different suggestion was made using a combination of a subset of
-   CSS3 selector syntax [W3C.REC-selectors-3-20181106] combined with the
-   CSS syntax of specifing urls.
+   When a server receives the "Prefer(-Push)" header, it can choose to
+   push the related resources.
 
-3.4.1.  Example using Prefer-Push header
+   It's possible for a resource to be references multiple times via
+   different link-relationships.  The server must de-duplicate these
+   responses.
 
-   GET /articles HTTP/1.1
-   Prefer-Push: item, item > author, item >
-     url("https://example.org/custom-rel"), icon
+   A server is free to ignore push-requests.
+
 
 
 
@@ -226,44 +226,28 @@ Evert Pot                 Expires May 19, 2019                  [Page 4]
 Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 
-3.4.2.  Example using Prefer header
-
-   GET /articles HTTP/1.1
-   Prefer: push="item, item > author, item >
-     url(\"https://example.org/custom-rel\"), icon"
-
-3.5.  N-depth pushes with SparQL property paths
-
-   The following format is inspired by SparQL property paths.
-
-3.5.1.  Example using Prefer-Push header
-
-   GET /articles HTTP/1.1
-   Prefer-Push: item / ( author, <https://example.org/custom-rel> ),
-     icon
-
-3.5.2.  Example using Prefer header
-
-   GET /articles HTTP/1.1
-   Prefer: push="item / ( author, <https://example.org/custom-rel> ),
-     icon"
-
-4.  Server pushes
-
-   When a server receives the "Prefer(-Push)" header, it can choose to
-   push the related resources.
-
-   It's possible for a resource to be references multiple times via
-   different link-relationships.  The server must de-duplicate these
-   responses.
-
-   A server is free to ignore push-requests.
-
-4.1.  ABNF syntax
+5.  ABNF syntax
 
    TODO when format is picked
 
-5.  Security considerations
+6.  Using with "preload" relationship types
+
+   [W3C.CR-preload-20171026] defines a "preload" relationship type, that
+   an origin can use to inform a client to start fetching a resource, or
+   a proxy to initiate a HTTP/2 push.
+
+   Clients interacting with servers or proxies implementing "preload"
+   could discard "Prefer-Push: preload", as it would be a no-op, but
+   this is not recommended as servers and proxies could still take this
+   as a hint that a Push is desired.
+
+   A distinct difference between "preload" and "Prefer-Push" is that
+   "preload" can be used by origin servers to inform clients and
+   intermediates to fetch and potentially push resources optimistically,
+   but fundamentally "Prefer-Push" is a completely client-driven
+   mechanism.
+
+7.  Security considerations
 
    The Prefer-Push mechanism can potentially result in a large number of
    resources being pushed.  This can result in a Denial-of-Service
@@ -273,6 +257,22 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    it sends.  In the case of N-Depth pushes, servers SHOULD also set
    restrictions around the depth it supports.
 
+8.  IANA considerations
+
+   TODO: Put registry updates where a decision is made on Prefer/Prefer-
+   Push.
+
+9.  Acknowledgements
+
+10.  References
+
+10.1.  Normative References
+
+   [I-D.ietf-httpbis-header-structure]
+              Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
+              draft-ietf-httpbis-header-structure-08 (work in progress),
+              October 2018.
+
 
 
 
@@ -281,22 +281,6 @@ Evert Pot                 Expires May 19, 2019                  [Page 5]
 
 Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
-
-6.  IANA considerations
-
-   TODO: Put registry updates where a decision is made on Prefer/Prefer-
-   Push.
-
-7.  Acknowledgements
-
-8.  References
-
-8.1.  Normative References
-
-   [I-D.ietf-httpbis-header-structure]
-              Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
-              draft-ietf-httpbis-header-structure-08 (work in progress),
-              October 2018.
 
    [RFC7240]  Snell, J., "Prefer Header for HTTP", RFC 7240,
               DOI 10.17487/RFC7240, June 2014,
@@ -311,14 +295,12 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               DOI 10.17487/RFC8288, October 2017,
               <https://www.rfc-editor.org/info/rfc8288>.
 
-   [W3C.REC-selectors-3-20181106]
-              A&#135;elik, T., Etemad, E., Glazman, D., Hickson, I.,
-              Linss, P., and J. Williams, "Selectors Level 3", World
-              Wide Web Consortium Recommendation REC-selectors-
-              3-20181106, November 2018,
-              <https://www.w3.org/TR/2018/REC-selectors-3-20181106>.
+   [W3C.CR-preload-20171026]
+              Grigorik, I. and Y. Weiss, "Preload", World Wide Web
+              Consortium CR CR-preload-20171026, October 2017,
+              <https://www.w3.org/TR/2017/CR-preload-20171026>.
 
-8.2.  Informative References
+10.2.  Informative References
 
    [HAL]      Kelly, M., "JSON Hypertext Application Language", June
               2012,
@@ -330,13 +312,6 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    [RFC4287]  Nottingham, M., Ed. and R. Sayre, Ed., "The Atom
               Syndication Format", RFC 4287, DOI 10.17487/RFC4287,
               December 2005, <https://www.rfc-editor.org/info/rfc4287>.
-
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 6]
-
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
-
 
    [S-expression]
               "S-expressions", n.d.,
@@ -358,35 +333,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 7]
+Evert Pot                 Expires May 19, 2019                  [Page 6]
