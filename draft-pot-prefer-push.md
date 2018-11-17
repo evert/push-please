@@ -171,48 +171,6 @@ GET /articles HTTP/1.1
 Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
 ~~~~
 
-## N-depth pushes with CSS syntax
-
-A different suggestion was made using a combination of a subset of CSS3
-selector syntax {{W3C.REC-selectors-3-20181106}} combined with the CSS
-syntax of specifing urls.
-
-### Example using Prefer-Push header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer-Push: item, item > author, item >
-  url("https://example.org/custom-rel"), icon
-~~~~
-
-### Example using Prefer header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer: push="item, item > author, item >
-  url(\"https://example.org/custom-rel\"), icon"
-~~~~
-
-## N-depth pushes with SparQL property paths
-
-The following format is inspired by SparQL property paths.
-
-### Example using Prefer-Push header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer-Push: item / ( author, <https://example.org/custom-rel> ),
-  icon
-~~~~
-
-### Example using Prefer header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer: push="item / ( author, <https://example.org/custom-rel> ),
-  icon"
-~~~~
-
 # Server pushes
 
 When a server receives the `Prefer(-Push)` header, it can choose to push the
