@@ -60,15 +60,14 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 1.  Introduction
 
-   HTTP/2 [RFC7540] allows a server to push requests and responses to a
-   HTTP client, in anticipation that the client will need them in the
-   near future.
+   HTTP/2 [RFC7540] allows a server to push request and response pairs
+   to HTTP clients.  This can save round-trips between server and client
+   and reduces the total time required for a client to retrieve all
+   requested resources.
 
    This mechanism is completely controlled by the server, and it is up
    to implementors of services to anticipate what resources a client
-   might need next.  Some implementations of this feature attempt to
-   intelligently guess which resources a client might need based on past
-   behavior.
+   might need next.
 
    This specification defines a new HTTP header that allows a client to
    inform a server of resources they will require next based on a link
@@ -78,7 +77,7 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
    Many HTTP-based services provide some mechanism to embed the HTTP
    response bodies of resources into other HTTP resource.  A common
-   example of this when a resource is structured as a "collection of
+   example of this is when a resource is structured as a "collection of
    resources".  Examples of this include:
 
    o  The Atom Syndication Format [RFC4287] that encodes "ATOM:entry"
@@ -104,8 +103,9 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    and caches are not aware of these embedded resources, because there
    was never a real HTTP request.
 
-   By leveraging HTTP/2 push instead of poorly standardized embedding
+   By leveraging HTTP/2 push instead of format-specific embedding
    mechanisms, it's possible for services to push subordinate resources
+   as soon as possible, generate HTTP responses as a "set" all while
 
 
 
@@ -114,8 +114,9 @@ Evert Pot                 Expires May 19, 2019                  [Page 2]
 Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 
-   as soon as possible, generate HTTP responses as a "set" all while
-   still taking advantage of existing HTTP infrastructure.
+   still taking advantage of existing HTTP infrastructure.  Another
+   advantage of HTTP/2 push over embedding it that it allows resources
+   of mixed mediatypes to be pushed.
 
    In many REST apis, sub-ordiniate or embedded resources are identified
    by their link relation.  By using the link relation, it will be
@@ -161,7 +162,6 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
    The following example requests for the server to push the resources
    linked via the "item" and "icon" relation.  For each of the resources
-
 
 
 
@@ -232,9 +232,10 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 6.  Using with "preload" relationship types
 
-   [W3C.CR-preload-20171026] defines a "preload" relationship type, that
-   an origin can use to inform a client to start fetching a resource, or
-   a proxy to initiate a HTTP/2 push.
+   [W3C.CR-preload-20171026] defines a "preload" relationship type.
+   This relationship type can be used by an origin to inform a client or
+   intermediate to start fetching a resource, or a proxy to initiate a
+   HTTP/2 push.
 
    Clients interacting with servers or proxies implementing "preload"
    could discard "Prefer-Push: preload", as it would be a no-op, but
@@ -272,7 +273,6 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
               draft-ietf-httpbis-header-structure-08 (work in progress),
               October 2018.
-
 
 
 

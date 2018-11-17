@@ -48,13 +48,14 @@
 
 <section anchor="introduction" title="Introduction">
 
-<t>HTTP/2 <xref target="RFC7540"/> allows a server to push requests and responses to a HTTP
-client, in anticipation that the client will need them in the near future.</t>
+<t>HTTP/2 <xref target="RFC7540"/> allows a server to push request and response pairs to
+HTTP clients. This can save round-trips between server and client and
+reduces the total time required for a client to retrieve all requested
+resources.</t>
 
 <t>This mechanism is completely controlled by the server, and it is up to
 implementors of services to anticipate what resources a client might need
-next. Some implementations of this feature attempt to intelligently guess
-which resources a client might need based on past behavior.</t>
+next.</t>
 
 <t>This specification defines a new HTTP header that allows a client to inform a
 server of resources they will require next based on a link relation type
@@ -64,7 +65,7 @@ server of resources they will require next based on a link relation type
 <section anchor="rationale" title="Rationale">
 
 <t>Many HTTP-based services provide some mechanism to embed the HTTP response
-bodies of resources into other HTTP resource. A common example of this when
+bodies of resources into other HTTP resource. A common example of this is when
 a resource is structured as a “collection of resources”. Examples of this
 include:</t>
 
@@ -91,10 +92,11 @@ be less time consuming that generating each response individually.</t>
 are not aware of these embedded resources, because there was never a real HTTP
 request.</t>
 
-<t>By leveraging HTTP/2 push instead of poorly standardized embedding mechanisms,
+<t>By leveraging HTTP/2 push instead of format-specific embedding mechanisms,
 it’s possible for services to push subordinate resources as soon as possible,
 generate HTTP responses as a “set” all while still taking advantage of existing
-HTTP infrastructure.</t>
+HTTP infrastructure. Another advantage of HTTP/2 push over embedding it that
+it allows resources of mixed mediatypes to be pushed.</t>
 
 <t>In many REST apis, sub-ordiniate or embedded resources are identified by their
 link relation. By using the link relation, it will be possible for a client
@@ -211,9 +213,9 @@ link-relationships. The server must de-duplicate these responses.</t>
 </section>
 <section anchor="using-with-preload-relationship-types" title="Using with “preload” relationship types">
 
-<t><xref target="W3C.CR-preload-20171026"/> defines a “preload” relationship type, that an
-origin can use to inform a client to start fetching a resource, or a proxy
-to initiate a HTTP/2 push.</t>
+<t><xref target="W3C.CR-preload-20171026"/> defines a “preload” relationship type. This
+relationship type can be used by an origin to inform a client or intermediate
+to start fetching a resource, or a proxy to initiate a HTTP/2 push.</t>
 
 <t>Clients interacting with servers or proxies implementing “preload” could
 discard <spanx style="verb">Prefer-Push: preload</spanx>, as it would be a no-op, but this is not
@@ -301,68 +303,68 @@ around the depth it supports.</t>
   </back>
 
 <!-- ##markdown-source:
-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
-aU0udbEK94Phcn+BoAnxH+UEuGrTGgAA
+H4sIAJZr8FsAA7VZa2/cuBX9zl9BTD5sNhiNH93dBAMUqPPauE3iIPZiC3SL
+miNxZriWRJWkbA8C97f33EtS0jhJ4wKtEQOKRN73PffhoihEpYJeyuPDo2fF
+0VFx9KMIJtR4M3tzcfGhKGuj2yB9v9loH3QlP/R+Kz84vdZOt6WeicqWrWpw
+oXJqHYrO4pc/Fx2OFoeHogSHjXW7pfShEqoPW+uWQsoCv1Ka1i/lq2vtgvxg
+A7/SjTL1Ujb6T5reg+SitA1/6p1Zym0InV8eHEy/HojWukYFc62J9sfXL57+
++MNhenx2/OxZfnsc354WLxdGh3VBxFbGF1utKgjtg+vL0Dum8usfXixefCR9
+aquqAkZ6enR4/NNSCNOu77H74fjZU3p8c/J2yaIWsOFW1TP+TzLqn8/P3ss3
+uw5y69sgT7quNjCPsa18q9pNrzaaj49Gop9o39k7c6XlX3Rd7yLNwXPHxeFP
+xeHTyEi5jQ6jjYK1tWdNF9ZtDrahqQ+ip66IUvG7t20BMclRkuUrTj6cDhrw
+Z9WZ+0osceiL/OgCzjOzaKIDnDsv9C2s6D00Ha3j8XLPPLPpOT/7IgPdLm7M
+lel0ZRRzof8dTC8KURSFVCu4UpVBiIuzl2fxXWOqqtZCPJKnbXC2gqf5PIX6
+wbH89CmFzd2dVHVtb7xU0muHMJPBSopn6fQ/e2SCVG2FZ99BTi07ZZzHESYk
+Y874hbzYGi9L1UqvrrV0tm+rIjjTebnS4UbrNhMnYinT8CichmQaBLcaRIOq
+YZ9GM2uDbxJ2hWDpAgRzGlSRDCR0FlATGW97B0IL2IBEaXS5Va3xjSS5bNPV
+Ouh6h0eyRl2D9GrHXKNccxbMBDred6SfoTsN2Froa9d8zrCoFmeDKU2HoJQ3
+WxXkwH6UtTGbbZCthnAt4j/L5TtdmnVOhEqvTcu3Wn0j2aIxNyEZyA6OGfWP
+ySiVSOaEYCNzqLOTNyZZBvaTxFqulIe6YKdkbdorfKwj+4DsFBwJhBp3dwsK
+l4/8TVHsvFPtjqUqIonBBJ2z16aC7Sx8NZoa8ulmhYNkV9Ymh41Y2cpovy+u
+gW2lxVk3HOYvC3lCLmsgob5V5Aa6F8h8+Hez1a1Qw2F6NQBZJRWZa1aShzng
+9zjOFvJVJOgzRaBbWfcVkE08QRBreRJsI893bZV99JozOyYMAR8Shp2DkmAr
+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
 
 -->
 

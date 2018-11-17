@@ -41,13 +41,14 @@ TODO
 
 # Introduction
 
-HTTP/2 {{RFC7540}} allows a server to push requests and responses to a HTTP
-client, in anticipation that the client will need them in the near future.
+HTTP/2 {{RFC7540}} allows a server to push request and response pairs to
+HTTP clients. This can save round-trips between server and client and
+reduces the total time required for a client to retrieve all requested
+resources.
 
 This mechanism is completely controlled by the server, and it is up to
 implementors of services to anticipate what resources a client might need
-next. Some implementations of this feature attempt to intelligently guess
-which resources a client might need based on past behavior.
+next.
 
 This specification defines a new HTTP header that allows a client to inform a
 server of resources they will require next based on a link relation type
@@ -56,7 +57,7 @@ server of resources they will require next based on a link relation type
 # Rationale
 
 Many HTTP-based services provide some mechanism to embed the HTTP response
-bodies of resources into other HTTP resource. A common example of this when
+bodies of resources into other HTTP resource. A common example of this is when
 a resource is structured as a "collection of resources". Examples of this
 include:
 
@@ -79,10 +80,11 @@ These mechanism also pose an issue. HTTP clients and intermediates and caches
 are not aware of these embedded resources, because there was never a real HTTP
 request.
 
-By leveraging HTTP/2 push instead of poorly standardized embedding mechanisms,
+By leveraging HTTP/2 push instead of format-specific embedding mechanisms,
 it's possible for services to push subordinate resources as soon as possible,
 generate HTTP responses as a "set" all while still taking advantage of existing
-HTTP infrastructure.
+HTTP infrastructure. Another advantage of HTTP/2 push over embedding it that
+it allows resources of mixed mediatypes to be pushed.
 
 In many REST apis, sub-ordiniate or embedded resources are identified by their
 link relation. By using the link relation, it will be possible for a client
@@ -186,9 +188,9 @@ TODO when format is picked
 
 # Using with "preload" relationship types
 
-{{W3C.CR-preload-20171026}} defines a "preload" relationship type, that an
-origin can use to inform a client to start fetching a resource, or a proxy
-to initiate a HTTP/2 push.
+{{W3C.CR-preload-20171026}} defines a "preload" relationship type. This
+relationship type can be used by an origin to inform a client or intermediate
+to start fetching a resource, or a proxy to initiate a HTTP/2 push.
 
 Clients interacting with servers or proxies implementing "preload" could
 discard `Prefer-Push: preload`, as it would be a no-op, but this is not
