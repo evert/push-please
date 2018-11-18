@@ -176,7 +176,7 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 3.2.1.  Example using Prefer-Push header
 
    Because the Structered Headers format does not have a way to define
-   headers of arbitrarly depth, a custom format is used.  This format is
+   lists of arbitrary depth, a custom format is used.  This format is
    intended to resemble existing HTTP headers but there's no direct
    equivalent.
 

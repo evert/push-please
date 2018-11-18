@@ -137,8 +137,8 @@ custom link relationship to be pushed.
 
 ### Example using Prefer-Push header
 
-Because the Structered Headers format does not have a way to define headers
-of arbitrarly depth, a custom format is used. This format is intended to
+Because the Structered Headers format does not have a way to define lists
+of arbitrary depth, a custom format is used. This format is intended to
 resemble existing HTTP headers but there's no direct equivalent.
 
 ~~~~
