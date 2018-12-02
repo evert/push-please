@@ -31,7 +31,8 @@ informative:
 
 --- abstract
 
-TODO
+A header for enabling HTTP clients to indicate that a Push for specific
+related resources might be desired.
 
 --- middle
 
