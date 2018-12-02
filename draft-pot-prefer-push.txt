@@ -3,9 +3,9 @@
 
 
 Network Working Group                                        . Evert Pot
-Internet-Draft                                         November 15, 2018
+Internet-Draft                                         December 02, 2018
 Intended status: Standards Track
-Expires: May 19, 2019
+Expires: June 5, 2019
 
 
                  HTTP-client suggested Push Preference
@@ -30,7 +30,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 19, 2019.
+   This Internet-Draft will expire on June 5, 2019.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Evert Pot                 Expires May 19, 2019                  [Page 1]
+Evert Pot                 Expires June 5, 2019                  [Page 1]
 
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 1.  Introduction
@@ -95,13 +95,13 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    1.  It reduces the number of roundtrips.  A client can make a single
        HTTP request and get many responses.
 
-   2.  Generating a set of resources can often be implemented on a
-       server to be less time consuming that generating each response
+   2.  Generating a related set of resources can often be implemented on
+       a server to be less time consuming that generating each response
        individually.
 
-   These mechanism also pose an issue.  HTTP clients and intermediates
-   and caches are not aware of these embedded resources, because there
-   was never a real HTTP request.
+   These mechanism also poses an issue.  HTTP clients and intermediaries
+   are not aware of these embedded resources, because there was never a
+   true HTTP request.
 
    By leveraging HTTP/2 push instead of format-specific embedding
    mechanisms, it's possible for services to push subordinate resources
@@ -109,9 +109,9 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 
 
-Evert Pot                 Expires May 19, 2019                  [Page 2]
+Evert Pot                 Expires June 5, 2019                  [Page 2]
 
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
    still taking advantage of existing HTTP infrastructure.  Another
@@ -126,121 +126,25 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
 
 3.  The header format
 
-   *Note*: the following subsections contain several proposals.  Only
-   one should stay in this specification, but all suggestions are
-   currently listed for completeness.
-
-   Each subsection contains an example of a "Prefer-Push" header, but
-   also stated as a new parameter of the "Prefer" header [RFC7240].  In
-   this case also only 1 should stay in this document before
-   duplication.
-
-3.1.  Single-depth pushes
-
-   The simplest version of this only allows single depth push
-   preferences.  This means that the "Prefer-Push" header can only be
-   used for linked resources from the context resource.
-
-3.1.1.  Example using Prefer-Push header
-
    This format should uses the "List" format from the Structured Headers
    format [I-D.ietf-httpbis-header-structure].
 
    GET /articles HTTP/1.1
    Prefer-Push: item, author, "https://example.org/custom-rel"
 
-3.1.2.  Example using Prefer header
-
-   GET /articles HTTP/1.1
-   Prefer: push="item, author, \"https://example.org/custom-rel\""
-
-3.2.  N-depth pushes
-
-   Hypermedia clients often will need to follow a chain of links, it
-   might therefore be benefitial to allow clients to specify relations
-   at multiple depths.
-
-   The following example requests for the server to push the resources
-   linked via the "item" and "icon" relation.  For each of the resources
-
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 3]
-
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
-
-
-   linked via the "item" relationship, it also requests the "author"
-   relationship and custom link relationship to be pushed.
-
-3.2.1.  Example using Prefer-Push header
-
-   Because the Structered Headers format does not have a way to define
-   lists of arbitrary depth, a custom format is used.  This format is
-   intended to resemble existing HTTP headers but there's no direct
-   equivalent.
-
-   GET /articles HTTP/1.1
-   Prefer-Push: item(author, "https://example.org/custom-rel"), icon
-
-3.2.2.  Example using Prefer header
-
-   GET /articles HTTP/1.1
-   Prefer: push="item(author, \"https://example.org/custom-rel\"), icon"
-
-3.3.  N-depth pushes with S-expression syntax
-
-   The following example expresses the same information, but instead of
-   a custom format it uses [S-expression].
-
-3.3.1.  Example using Prefer-Push header
-
-   GET /articles HTTP/1.1
-   Prefer-Push: (item(author "https://example.org/custom-rel") icon)
-
-3.3.2.  Example using Prefer header
-
-   GET /articles HTTP/1.1
-   Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
-
 4.  Server pushes
 
-   When a server receives the "Prefer(-Push)" header, it can choose to
-   push the related resources.
+   When a server receives the "Prefer-Push" header, it can choose to
+   push the related resources.  It's up to the discretion of the
+   implementor to decide which resources to push.  A server is also free
+   to ignore push-requests.
 
-   It's possible for a resource to be references multiple times via
-   different link-relationships.  The server must de-duplicate these
-   responses.
-
-   A server is free to ignore push-requests.
-
-
-
-
-
-
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 4]
-
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
-
-
-5.  ABNF syntax
-
-   TODO when format is picked
-
-6.  Using with "preload" relationship types
+5.  Using with "preload" relationship types
 
    [W3C.CR-preload-20171026] defines a "preload" relationship type.
    This relationship type can be used by an origin to inform a client or
    intermediate to start fetching a resource, or a proxy to initiate a
    HTTP/2 push.
-
-   Clients interacting with servers or proxies implementing "preload"
-   could discard "Prefer-Push: preload", as it would be a no-op, but
-   this is not recommended as servers and proxies could still take this
-   as a hint that a Push is desired.
 
    A distinct difference between "preload" and "Prefer-Push" is that
    "preload" can be used by origin servers to inform clients and
@@ -248,43 +152,57 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
    but fundamentally "Prefer-Push" is a completely client-driven
    mechanism.
 
-7.  Security considerations
+   As such, these features can co-exist.
+
+6.  Security considerations
 
    The Prefer-Push mechanism can potentially result in a large number of
    resources being pushed.  This can result in a Denial-of-Service
    attack.
 
+
+
+
+
+
+Evert Pot                 Expires June 5, 2019                  [Page 3]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
    A server must set reasonable restrictions around the amount of pushes
    it sends.  In the case of N-Depth pushes, servers SHOULD also set
    restrictions around the depth it supports.
 
-8.  IANA considerations
+7.  IANA considerations
 
-   TODO: Put registry updates where a decision is made on Prefer/Prefer-
-   Push.
+   This document defines the "Prefer-Push" HTTP request fields and
+   registers them in the Permanent Message Header Fields registry.
 
-9.  Acknowledgements
+7.1.  Prefer-Push
 
-10.  References
+   o  Header field name: Prefer-Push
 
-10.1.  Normative References
+   o  Applicable protocol: HTTP
+
+   o  Status: standard
+
+   o  Author/Change controller: IETF
+
+   o  Specification document(s): Section 7.1 of this document
+
+   o  Related information: for Client Hints
+
+8.  Acknowledgements
+
+9.  References
+
+9.1.  Normative References
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
-              draft-ietf-httpbis-header-structure-08 (work in progress),
-              October 2018.
-
-
-
-
-Evert Pot                 Expires May 19, 2019                  [Page 5]
-
-Internet-Draft    HTTP-client suggested Push Preference    November 2018
-
-
-   [RFC7240]  Snell, J., "Prefer Header for HTTP", RFC 7240,
-              DOI 10.17487/RFC7240, June 2014,
-              <https://www.rfc-editor.org/info/rfc7240>.
+              draft-ietf-httpbis-header-structure-09 (work in progress),
+              December 2018.
 
    [RFC7540]  Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
@@ -300,7 +218,15 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               Consortium CR CR-preload-20171026, October 2017,
               <https://www.w3.org/TR/2017/CR-preload-20171026>.
 
-10.2.  Informative References
+
+
+
+Evert Pot                 Expires June 5, 2019                  [Page 4]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
+9.2.  Informative References
 
    [HAL]      Kelly, M., "JSON Hypertext Application Language", June
               2012,
@@ -313,9 +239,48 @@ Internet-Draft    HTTP-client suggested Push Preference    November 2018
               Syndication Format", RFC 4287, DOI 10.17487/RFC4287,
               December 2005, <https://www.rfc-editor.org/info/rfc4287>.
 
-   [S-expression]
-              "S-expressions", n.d.,
-              <https://en.wikipedia.org/wiki/S-expression>.
+Appendix A.  Example
+
+   A server serves a document with a JSON-based media-type.  The
+   following example document might represent a list of articles:
+
+   HTTP/1.1 200 OK
+   Content-Type: application/vnd.example.links+json
+
+   {
+      "links": [
+         { "rel": "item", "href": "/article/1" },
+         { "rel": "item", "href": "/article/2" },
+         { "rel": "item", "href": "/article/3" },
+         { "rel": "item", "href": "/article/4" },
+         { "rel": "item", "href": "/article/5" }
+      ]
+      "total" : 5,
+   }
+
+   A "Prefer-Push"-enabled client knows it will want to receive the full
+   representations of all articles.  When the client receives the list
+   of articles via a "GET" request, it can indicate this preference with
+   the "Prefer-Push" header:
+
+   GET /article HTTP/1.1
+   Accept: application/vnd.example.links+json
+   Prefer-Push: item
+
+   Upon recievinvg this request, server may immediately generate the
+   request and response pairs for every "item" link in the collection
+   and initiate push streams for each.
+
+
+
+
+
+
+
+Evert Pot                 Expires June 5, 2019                  [Page 5]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
 
 Author's Address
 
@@ -333,4 +298,39 @@ Author's Address
 
 
 
-Evert Pot                 Expires May 19, 2019                  [Page 6]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Evert Pot                 Expires June 5, 2019                  [Page 6]

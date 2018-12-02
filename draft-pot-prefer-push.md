@@ -1,5 +1,5 @@
 ---
-date: 2018-11-15
+date: 2018-12-02
 title: "HTTP-client suggested Push Preference"
 docname: draft-pot-prefer-push-00
 category: std
@@ -11,7 +11,6 @@ author:
 normative:
   RFC7540:
   RFC8288:
-  RFC7240:
   I-D.ietf-httpbis-header-structure:
   W3C.CR-preload-20171026:
 
@@ -28,10 +27,6 @@ informative:
     -: json-api
     title: JSON:API
     target: https://jsonapi.org/format/
-  S-expression:
-    -: "sexp"
-    title: "S-expressions"
-    target: https://en.wikipedia.org/wiki/S-expression
 
 --- abstract
 
@@ -73,12 +68,11 @@ advantages:
 
 1. It reduces the number of roundtrips. A client can make a single HTTP request
    and get many responses.
-2. Generating a set of resources can often be implemented on a server to
-   be less time consuming that generating each response individually.
+2. Generating a related set of resources can often be implemented on a server
+   to be less time consuming that generating each response individually.
 
-These mechanism also pose an issue. HTTP clients and intermediates and caches
-are not aware of these embedded resources, because there was never a real HTTP
-request.
+These mechanism also poses an issue. HTTP clients and intermediaries are not
+aware of these embedded resources, because there was never a true HTTP request.
 
 By leveraging HTTP/2 push instead of format-specific embedding mechanisms,
 it's possible for services to push subordinate resources as soon as possible,
@@ -93,22 +87,6 @@ to only push the resources that the client knows it will need.
 
 # The header format
 
-**Note**: the following subsections contain several proposals. Only one should
-stay in this specification, but all suggestions are currently listed for
-completeness.
-
-Each subsection contains an example of a `Prefer-Push` header, but also stated
-as a new parameter of the `Prefer` header {{RFC7240}}. In this case also only 1
-should stay in this document before duplication.
-
-## Single-depth pushes
-
-The simplest version of this only allows single depth push preferences. This
-means that the `Prefer-Push` header can only be used for linked resources from
-the context resource.
-
-### Example using Prefer-Push header
-
 This format should uses the "List" format from the Structured Headers format
 {{I-D.ietf-httpbis-header-structure}}.
 
@@ -117,90 +95,24 @@ GET /articles HTTP/1.1
 Prefer-Push: item, author, "https://example.org/custom-rel"
 ~~~~
 
-### Example using Prefer header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer: push="item, author, \"https://example.org/custom-rel\""
-~~~~
-
-## N-depth pushes
-
-Hypermedia clients often will need to follow a chain of links, it might
-therefore be benefitial to allow clients to specify relations at multiple
-depths.
-
-The following example requests for the server to push the resources linked
-via the "item" and "icon" relation. For each of the resources linked via
-the "item" relationship, it also requests the "author" relationship and
-custom link relationship to be pushed.
-
-### Example using Prefer-Push header
-
-Because the Structered Headers format does not have a way to define lists
-of arbitrary depth, a custom format is used. This format is intended to
-resemble existing HTTP headers but there's no direct equivalent.
-
-~~~~
-GET /articles HTTP/1.1
-Prefer-Push: item(author, "https://example.org/custom-rel"), icon
-~~~~
-
-### Example using Prefer header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer: push="item(author, \"https://example.org/custom-rel\"), icon"
-~~~~
-
-## N-depth pushes with S-expression syntax
-
-The following example expresses the same information, but instead of a custom
-format it uses {{S-expression}}.
-
-### Example using Prefer-Push header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer-Push: (item(author "https://example.org/custom-rel") icon)
-~~~~
-
-### Example using Prefer header
-
-~~~~
-GET /articles HTTP/1.1
-Prefer: push="(item(author \"https://example.org/custom-rel\") icon)"
-~~~~
-
 # Server pushes
 
-When a server receives the `Prefer(-Push)` header, it can choose to push the
-related resources.
-
-It's possible for a resource to be references multiple times via different
-link-relationships. The server must de-duplicate these responses.
-
-A server is free to ignore push-requests.
-
-# ABNF syntax
-
-TODO when format is picked
+When a server receives the `Prefer-Push` header, it can choose to push the
+related resources. It's up to the discretion of the implementor to decide
+which resources to push. A server is also free to ignore push-requests.
 
 # Using with "preload" relationship types
 
-{{W3C.CR-preload-20171026}} defines a "preload" relationship type. This
+{{W3C.CR-preload-20171026}} defines a `preload` relationship type. This
 relationship type can be used by an origin to inform a client or intermediate
 to start fetching a resource, or a proxy to initiate a HTTP/2 push.
-
-Clients interacting with servers or proxies implementing "preload" could
-discard `Prefer-Push: preload`, as it would be a no-op, but this is not
-recommended as servers and proxies could still take this as a hint that
-a Push is desired.
 
 A distinct difference between `preload` and `Prefer-Push` is that `preload`
 can be used by origin servers to inform clients and intermediates to fetch
 and potentially push resources optimistically, but fundamentally `Prefer-Push`
 is a completely client-driven mechanism.
+
+As such, these features can co-exist.
 
 # Security considerations
 
@@ -213,9 +125,54 @@ around the depth it supports.
 
 # IANA considerations
 
-TODO: Put registry updates where a decision is made on Prefer/Prefer-Push.
+This document defines the `Prefer-Push` HTTP request fields and registers
+them in the Permanent Message Header Fields registry.
+
+## Prefer-Push {#prefer-push}
+- Header field name: Prefer-Push
+- Applicable protocol: HTTP
+- Status: standard
+- Author/Change controller: IETF
+- Specification document(s): {{prefer-push}} of this document
+- Related information: for Client Hints
 
 # Acknowledgements
 
 --- back
+
+# Example
+
+A server serves a document with a JSON-based media-type. The following example
+document might represent a list of articles:
+
+~~~~
+HTTP/1.1 200 OK
+Content-Type: application/vnd.example.links+json
+
+{
+   "links": [
+      { "rel": "item", "href": "/article/1" },
+      { "rel": "item", "href": "/article/2" },
+      { "rel": "item", "href": "/article/3" },
+      { "rel": "item", "href": "/article/4" },
+      { "rel": "item", "href": "/article/5" }
+   ]
+   "total" : 5,
+}
+~~~~
+
+A "Prefer-Push"-enabled client knows it will want to receive the full
+representations of all articles. When the client receives the list of
+articles via a "GET" request, it can indicate this preference with
+the "Prefer-Push" header:
+
+~~~~
+GET /article HTTP/1.1
+Accept: application/vnd.example.links+json
+Prefer-Push: item
+~~~~
+
+Upon recievinvg this request, server may immediately generate the request
+and response pairs for every "item" link in the collection and initiate
+push streams for each.
 
