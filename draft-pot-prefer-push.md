@@ -95,11 +95,16 @@ GET /articles HTTP/1.1
 Prefer-Push: item, author, "https://example.org/custom-rel"
 ~~~~
 
-# Server pushes
+# Handling a Prefer-Push request
 
 When a server receives the `Prefer-Push` header, it can choose to push the
 related resources. It's up to the discretion of the implementor to decide
 which resources to push. A server is also free to ignore push-requests.
+
+{{RFC8288}} defines Web Links as an abstract concept that can be specified
+in a variety of ways. It defines the HTTP "Link" header as a specific
+serialization. Like {{RFC8288}}, this specification is not dependent on the
+serialization of the Web Link.
 
 # Using with "preload" relationship types
 
@@ -172,7 +177,6 @@ Accept: application/vnd.example.links+json
 Prefer-Push: item
 ~~~~
 
-Upon recievinvg this request, server may immediately generate the request
+Upon recieving this request, server may immediately generate the request
 and response pairs for every "item" link in the collection and initiate
 push streams for each.
-
