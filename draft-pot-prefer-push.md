@@ -4,8 +4,9 @@ title: "HTTP-client suggested Push Preference"
 docname: draft-pot-prefer-push-00
 category: std
 author:
-  -
-    ins: Evert Pot
+ -
+    ins: E. Pot
+    name: Evert Pot
     email: me@evertpot.com
     uri: https://evertpot.com/
 normative:

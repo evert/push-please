@@ -2,7 +2,7 @@
 
 
 
-Network Working Group                                        . Evert Pot
+Network Working Group                                             E. Pot
 Internet-Draft                                         December 02, 2018
 Intended status: Standards Track
 Expires: June 5, 2019
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Evert Pot                 Expires June 5, 2019                  [Page 1]
+Pot                       Expires June 5, 2019                  [Page 1]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
@@ -109,7 +109,7 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Evert Pot                 Expires June 5, 2019                  [Page 2]
+Pot                       Expires June 5, 2019                  [Page 2]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
@@ -165,7 +165,7 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Evert Pot                 Expires June 5, 2019                  [Page 3]
+Pot                       Expires June 5, 2019                  [Page 3]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
@@ -221,7 +221,7 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Evert Pot                 Expires June 5, 2019                  [Page 4]
+Pot                       Expires June 5, 2019                  [Page 4]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
@@ -277,7 +277,7 @@ Appendix A.  Example
 
 
 
-Evert Pot                 Expires June 5, 2019                  [Page 5]
+Pot                       Expires June 5, 2019                  [Page 5]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
@@ -288,6 +288,7 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 Author's Address
 
+   Evert Pot
 
    Email: me@evertpot.com
    URI:   https://evertpot.com/
@@ -332,5 +333,4 @@ Author's Address
 
 
 
-
-Evert Pot                 Expires June 5, 2019                  [Page 6]
+Pot                       Expires June 5, 2019                  [Page 6]
