@@ -182,3 +182,9 @@ Prefer-Push: item
 Upon recieving this request, server may immediately generate the request
 and response pairs for every "item" link in the collection and initiate
 push streams for each.
+
+# Changelog
+
+## Changes since -00
+
+* Added an abstract
