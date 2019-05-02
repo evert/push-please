@@ -100,12 +100,12 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
        individually.
 
    These mechanism also poses an issue.  HTTP clients and intermediaries
-   are not aware of these embedded resources, because there was never a
-   true HTTP request.
+   such as proxies and caches are not aware of these embedded resources.
 
-   By leveraging HTTP/2 push instead of format-specific embedding
-   mechanisms, it's possible for services to push subordinate resources
-   as soon as possible, generate HTTP responses as a "set" all while
+   One example where this might fail is if a client recieves a resource,
+   embedded in another resource, a cache might not be aware of this
+   resource and serve a stale, older version when the resource is
+   requesed directly.
 
 
 
@@ -114,9 +114,19 @@ Pot                       Expires June 5, 2019                  [Page 2]
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
-   still taking advantage of existing HTTP infrastructure.  Another
-   advantage of HTTP/2 push over embedding it that it allows resources
-   of mixed mediatypes to be pushed.
+   To keep the performance advantage of being able to generate a related
+   set of HTTP together and maintain HTTP request, The HTTP/2 Push
+   mechanism could be an alternative to embedding.
+
+   HTTP/2 Push allows the server to initiate a request and response pair
+   and send them to the client early if the server thinks it will need
+   them.  Another advantage of HTTP/2 push over embedding it that it
+   allows resources of mixed mediatypes to be pushed.
+
+   Server can however not always anticipate which resources a client
+   might want in the future.  To avoid guessing, this specification
+   introduces a "Prefer-Push" header that allows a client to inform a
+   server which resources they will need next.
 
    In many REST apis, sub-ordiniate or embedded resources are identified
    by their link relation.  By using the link relation, it will be
@@ -151,16 +161,6 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    intermediate to start fetching a resource, or a proxy to initiate a
    HTTP/2 push.
 
-   A distinct difference between "preload" and "Prefer-Push" is that
-   "preload" can be used by origin servers to inform clients and
-   intermediates to fetch and potentially push resources optimistically,
-   but fundamentally "Prefer-Push" is a completely client-driven
-   mechanism.
-
-   As such, these features can co-exist.
-
-
-
 
 
 
@@ -169,6 +169,17 @@ Pot                       Expires June 5, 2019                  [Page 3]
 
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
+
+   A distinct difference between "preload" and "Prefer-Push" is that
+   "preload" can be used by origin servers to inform clients and
+   intermediates to fetch and potentially push resources optimistically,
+   but fundamentally "Prefer-Push" is a completely client-driven
+   mechanism.
+
+   These features can co-exist, but a wide adoption of client-driven
+   suggestions for pushes might eventually make "preload" unnecceary as
+   in most cases clients will have a better knowledge of the resources
+   they need.
 
 6.  Security considerations
 
@@ -203,12 +214,24 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 9.  References
 
+
+
+
+
+
+
+
+Pot                       Expires June 5, 2019                  [Page 4]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
 9.1.  Normative References
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
-              draft-ietf-httpbis-header-structure-09 (work in progress),
-              December 2018.
+              draft-ietf-httpbis-header-structure-10 (work in progress),
+              April 2019.
 
    [RFC7540]  Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
@@ -218,13 +241,6 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    [RFC8288]  Nottingham, M., "Web Linking", RFC 8288,
               DOI 10.17487/RFC8288, October 2017,
               <https://www.rfc-editor.org/info/rfc8288>.
-
-
-
-Pot                       Expires June 5, 2019                  [Page 4]
-
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
-
 
    [W3C.CR-preload-20171026]
               Grigorik, I. and Y. Weiss, "Preload", World Wide Web
@@ -249,6 +265,23 @@ Appendix A.  Example
    A server serves a document with a JSON-based media-type.  The
    following example document might represent a list of articles:
 
+
+
+
+
+
+
+
+
+
+
+
+
+Pot                       Expires June 5, 2019                  [Page 5]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
    HTTP/1.1 200 OK
    Content-Type: application/vnd.example.links+json
 
@@ -272,16 +305,6 @@ Appendix A.  Example
    Accept: application/vnd.example.links+json
    Prefer-Push: item
 
-
-
-
-
-
-Pot                       Expires June 5, 2019                  [Page 5]
-
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
-
-
    Upon recieving this request, server may immediately generate the
    request and response pairs for every "item" link in the collection
    and initiate push streams for each.
@@ -292,37 +315,14 @@ B.1.  Changes since -00
 
    o  Added an abstract
 
+   o  Updated rationale section significantly.
+
 Author's Address
 
    Evert Pot
 
    Email: me@evertpot.com
    URI:   https://evertpot.com/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

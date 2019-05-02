@@ -73,14 +73,26 @@ advantages:
 2. Generating a related set of resources can often be implemented on a server
    to be less time consuming that generating each response individually.
 
-These mechanism also poses an issue. HTTP clients and intermediaries are not
-aware of these embedded resources, because there was never a true HTTP request.
+These mechanism also poses an issue. HTTP clients and intermediaries such as
+proxies and caches are not aware of these embedded resources.
 
-By leveraging HTTP/2 push instead of format-specific embedding mechanisms,
-it's possible for services to push subordinate resources as soon as possible,
-generate HTTP responses as a "set" all while still taking advantage of existing
-HTTP infrastructure. Another advantage of HTTP/2 push over embedding it that
-it allows resources of mixed mediatypes to be pushed.
+One example where this might fail is if a client recieves a resource, embedded
+in another resource, a cache might not be aware of this resource and serve a
+stale, older version when the resource is requesed directly.
+
+To keep the performance advantage of being able to generate a related set of
+HTTP together and maintain HTTP request, The HTTP/2 Push mechanism could be an
+alternative to embedding.
+
+HTTP/2 Push allows the server to initiate a request and response pair and send
+them to the client early if the server thinks it will need them. Another
+advantage of HTTP/2 push over embedding it that it allows resources of mixed
+mediatypes to be pushed.
+
+Server can however not always anticipate which resources a client might want
+in the future. To avoid guessing, this specification introduces a `Prefer-Push`
+header that allows a client to inform a server which resources they will
+need next.
 
 In many REST apis, sub-ordiniate or embedded resources are identified by their
 link relation. By using the link relation, it will be possible for a client
@@ -119,7 +131,9 @@ can be used by origin servers to inform clients and intermediates to fetch
 and potentially push resources optimistically, but fundamentally `Prefer-Push`
 is a completely client-driven mechanism.
 
-As such, these features can co-exist.
+These features can co-exist, but a wide adoption of client-driven suggestions
+for pushes might eventually make `preload` unnecceary as in most cases clients
+will have a better knowledge of the resources they need.
 
 # Security considerations
 
@@ -188,3 +202,4 @@ push streams for each.
 ## Changes since -00
 
 * Added an abstract
+* Updated rationale section significantly.
