@@ -13,8 +13,9 @@ Expires: June 5, 2019
 
 Abstract
 
-   A header for enabling HTTP clients to indicate that a Push for
-   specific related resources might be desired.
+   "Prefer-Push" is a HTTP header that a client may use to request that
+   a server uses HTTP/2 Push to send related resources as identified by
+   their link relationships.
 
 Status of This Memo
 
@@ -47,7 +48,6 @@ Copyright Notice
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
-
 
 
 
@@ -96,16 +96,16 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
        HTTP request and get many responses.
 
    2.  Generating a related set of resources can often be implemented on
-       a server to be less time consuming that generating each response
+       a server to be less time consuming than generating each response
        individually.
 
-   These mechanism also poses an issue.  HTTP clients and intermediaries
-   are not aware of these embedded resources, because there was never a
-   true HTTP request.
+   These mechanisms also pose an issue.  To HTTP clients and
+   intermediaries such as proxies and caches resources are opaque.  They
+   are not aware of a concept of embedded resources.
 
-   By leveraging HTTP/2 push instead of format-specific embedding
-   mechanisms, it's possible for services to push subordinate resources
-   as soon as possible, generate HTTP responses as a "set" all while
+   One example where this might fail is if a client recieves a resource,
+   embedded in another resource, a cache might not be aware of this
+
 
 
 
@@ -114,9 +114,22 @@ Pot                       Expires June 5, 2019                  [Page 2]
 Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
-   still taking advantage of existing HTTP infrastructure.  Another
-   advantage of HTTP/2 push over embedding it that it allows resources
-   of mixed mediatypes to be pushed.
+   resource and serve a stale, older version when this resource is
+   requesed directly.
+
+   To keep the performance advantage of being able to generate a related
+   set of HTTP responses together, HTTP/2 Push could be an alternative
+   to embedding.
+
+   HTTP/2 Push allows the server to initiate a request and response pair
+   and send them to the client early if the server thinks it will need
+   them.  Another advantage of HTTP/2 push over embedding is that it
+   allows resources of mixed mediatypes to be pushed.
+
+   Servers can however not always anticipate which resources a client
+   might want pushed.  To avoid guessing, this specification introduces
+   a "Prefer-Push" header that allows a client to inform a server which
+   resources they will need next.
 
    In many REST apis, sub-ordiniate or embedded resources are identified
    by their link relation.  By using the link relation, it will be
@@ -126,11 +139,14 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 3.  The header format
 
-   This format should uses the "List" format from the Structured Headers
-   format [I-D.ietf-httpbis-header-structure].
+   This format should the "List" Data Type from the Structured Headers
+   specification [I-D.ietf-httpbis-header-structure].
 
    GET /articles HTTP/1.1
    Prefer-Push: item, author, "https://example.org/custom-rel"
+
+   Each item in the list is a link relationship, as described in Web
+   Links [RFC8288].
 
 4.  Handling a Prefer-Push request
 
@@ -139,10 +155,20 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    implementor to decide which resources to push.  A server is also free
    to ignore push-requests.
 
-   [RFC8288] defines Web Links as an abstract concept that can be
-   specified in a variety of ways.  It defines the HTTP "Link" header as
-   a specific serialization.  Like [RFC8288], this specification is not
-   dependent on the serialization of the Web Link.
+   If a server chooses to act on an item in the "Prefer-Push" list, the
+   Link Relationship should exist at the target resource.  This
+   specification does not require that the link relationships get
+   returned as HTTP "Link" headers.  The "Link" may be defined as
+   "<link>" HTML element, or as a JSON property.  How the link is
+   serialized is dependent on the media type.
+
+
+
+
+Pot                       Expires June 5, 2019                  [Page 3]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
 
 5.  Using with "preload" relationship types
 
@@ -157,18 +183,10 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    but fundamentally "Prefer-Push" is a completely client-driven
    mechanism.
 
-   As such, these features can co-exist.
-
-
-
-
-
-
-
-Pot                       Expires June 5, 2019                  [Page 3]
-
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
-
+   These features can co-exist, but a wide adoption of client-driven
+   suggestions for pushes might eventually make "preload" unnecceary as
+   in most cases clients will have a better knowledge of the resources
+   they need.
 
 6.  Security considerations
 
@@ -176,9 +194,8 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    resources being pushed.  This can result in a Denial-of-Service
    attack.
 
-   A server must set reasonable restrictions around the amount of pushes
-   it sends.  In the case of N-Depth pushes, servers SHOULD also set
-   restrictions around the depth it supports.
+   A server must set reasonable restrictions around the number of pushed
+   resources.
 
 7.  IANA considerations
 
@@ -199,6 +216,16 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
    o  Related information: for Client Hints
 
+
+
+
+
+
+Pot                       Expires June 5, 2019                  [Page 4]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
 8.  Acknowledgements
 
 9.  References
@@ -207,8 +234,8 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
    [I-D.ietf-httpbis-header-structure]
               Nottingham, M. and P. Kamp, "Structured Headers for HTTP",
-              draft-ietf-httpbis-header-structure-09 (work in progress),
-              December 2018.
+              draft-ietf-httpbis-header-structure-10 (work in progress),
+              April 2019.
 
    [RFC7540]  Belshe, M., Peon, R., and M. Thomson, Ed., "Hypertext
               Transfer Protocol Version 2 (HTTP/2)", RFC 7540,
@@ -218,13 +245,6 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
    [RFC8288]  Nottingham, M., "Web Linking", RFC 8288,
               DOI 10.17487/RFC8288, October 2017,
               <https://www.rfc-editor.org/info/rfc8288>.
-
-
-
-Pot                       Expires June 5, 2019                  [Page 4]
-
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
-
 
    [W3C.CR-preload-20171026]
               Grigorik, I. and Y. Weiss, "Preload", World Wide Web
@@ -249,6 +269,19 @@ Appendix A.  Example
    A server serves a document with a JSON-based media-type.  The
    following example document might represent a list of articles:
 
+
+
+
+
+
+
+
+
+Pot                       Expires June 5, 2019                  [Page 5]
+
+Internet-Draft    HTTP-client suggested Push Preference    December 2018
+
+
    HTTP/1.1 200 OK
    Content-Type: application/vnd.example.links+json
 
@@ -272,16 +305,6 @@ Appendix A.  Example
    Accept: application/vnd.example.links+json
    Prefer-Push: item
 
-
-
-
-
-
-Pot                       Expires June 5, 2019                  [Page 5]
-
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
-
-
    Upon recieving this request, server may immediately generate the
    request and response pairs for every "item" link in the collection
    and initiate push streams for each.
@@ -292,37 +315,14 @@ B.1.  Changes since -00
 
    o  Added an abstract
 
+   o  Updated rationale section significantly.
+
 Author's Address
 
    Evert Pot
 
    Email: me@evertpot.com
    URI:   https://evertpot.com/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

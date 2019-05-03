@@ -31,8 +31,9 @@ informative:
 
 --- abstract
 
-A header for enabling HTTP clients to indicate that a Push for specific
-related resources might be desired.
+`Prefer-Push` is a HTTP header that a client may use to request that a
+server uses HTTP/2 Push to send related resources as identified by their
+link relationships.
 
 --- middle
 
@@ -71,16 +72,28 @@ advantages:
 1. It reduces the number of roundtrips. A client can make a single HTTP request
    and get many responses.
 2. Generating a related set of resources can often be implemented on a server
-   to be less time consuming that generating each response individually.
+   to be less time consuming than generating each response individually.
 
-These mechanism also poses an issue. HTTP clients and intermediaries are not
-aware of these embedded resources, because there was never a true HTTP request.
+These mechanisms also pose an issue. To HTTP clients and intermediaries such
+as proxies and caches resources are opaque. They are not aware of a concept
+of embedded resources.
 
-By leveraging HTTP/2 push instead of format-specific embedding mechanisms,
-it's possible for services to push subordinate resources as soon as possible,
-generate HTTP responses as a "set" all while still taking advantage of existing
-HTTP infrastructure. Another advantage of HTTP/2 push over embedding it that
-it allows resources of mixed mediatypes to be pushed.
+One example where this might fail is if a client recieves a resource, embedded
+in another resource, a cache might not be aware of this resource and serve a
+stale, older version when this resource is requesed directly.
+
+To keep the performance advantage of being able to generate a related set of
+HTTP responses together, HTTP/2 Push could be an alternative to embedding.
+
+HTTP/2 Push allows the server to initiate a request and response pair and send
+them to the client early if the server thinks it will need them. Another
+advantage of HTTP/2 push over embedding is that it allows resources of mixed
+mediatypes to be pushed.
+
+Servers can however not always anticipate which resources a client might want
+pushed. To avoid guessing, this specification introduces a `Prefer-Push`
+header that allows a client to inform a server which resources they will
+need next.
 
 In many REST apis, sub-ordiniate or embedded resources are identified by their
 link relation. By using the link relation, it will be possible for a client
@@ -89,13 +102,16 @@ to only push the resources that the client knows it will need.
 
 # The header format
 
-This format should uses the "List" format from the Structured Headers format
-{{I-D.ietf-httpbis-header-structure}}.
+This format should the "List" Data Type from the Structured Headers
+specification {{I-D.ietf-httpbis-header-structure}}.
 
 ~~~~
 GET /articles HTTP/1.1
 Prefer-Push: item, author, "https://example.org/custom-rel"
 ~~~~
+
+Each item in the list is a link relationship, as described in Web Links
+{{RFC8288}}.
 
 # Handling a Prefer-Push request
 
@@ -103,10 +119,11 @@ When a server receives the `Prefer-Push` header, it can choose to push the
 related resources. It's up to the discretion of the implementor to decide
 which resources to push. A server is also free to ignore push-requests.
 
-{{RFC8288}} defines Web Links as an abstract concept that can be specified
-in a variety of ways. It defines the HTTP "Link" header as a specific
-serialization. Like {{RFC8288}}, this specification is not dependent on the
-serialization of the Web Link.
+If a server chooses to act on an item in the `Prefer-Push` list, the Link
+Relationship should exist at the target resource. This specification does
+not require that the link relationships get returned as HTTP `Link` headers.
+The `Link` may be defined as `<link>` HTML element, or as a JSON property.
+How the link is serialized is dependent on the media type.
 
 # Using with "preload" relationship types
 
@@ -119,16 +136,17 @@ can be used by origin servers to inform clients and intermediates to fetch
 and potentially push resources optimistically, but fundamentally `Prefer-Push`
 is a completely client-driven mechanism.
 
-As such, these features can co-exist.
+These features can co-exist, but a wide adoption of client-driven suggestions
+for pushes might eventually make `preload` unnecceary as in most cases clients
+will have a better knowledge of the resources they need.
 
 # Security considerations
 
 The Prefer-Push mechanism can potentially result in a large number of
 resources being pushed. This can result in a Denial-of-Service attack.
 
-A server must set reasonable restrictions around the amount of pushes it
-sends. In the case of N-Depth pushes, servers SHOULD also set restrictions
-around the depth it supports.
+A server must set reasonable restrictions around the number of pushed
+resources.
 
 # IANA considerations
 
@@ -188,3 +206,4 @@ push streams for each.
 ## Changes since -00
 
 * Added an abstract
+* Updated rationale section significantly.
