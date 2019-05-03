@@ -3,9 +3,9 @@
 
 
 Network Working Group                                             E. Pot
-Internet-Draft                                         December 02, 2018
+Internet-Draft                                              May 02, 2019
 Intended status: Standards Track
-Expires: June 5, 2019
+Expires: November 3, 2019
 
 
                  HTTP-client suggested Push Preference
@@ -32,11 +32,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on June 5, 2019.
+   This Internet-Draft will expire on November 3, 2019.
 
 Copyright Notice
 
-   Copyright (c) 2018 IETF Trust and the persons identified as the
+   Copyright (c) 2019 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Pot                       Expires June 5, 2019                  [Page 1]
+Pot                     Expires November 3, 2019                [Page 1]
 
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
+Internet-Draft    HTTP-client suggested Push Preference         May 2019
 
 
 1.  Introduction
@@ -109,9 +109,9 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Pot                       Expires June 5, 2019                  [Page 2]
+Pot                     Expires November 3, 2019                [Page 2]
 
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
+Internet-Draft    HTTP-client suggested Push Preference         May 2019
 
 
    resource and serve a stale, older version when this resource is
@@ -165,9 +165,9 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Pot                       Expires June 5, 2019                  [Page 3]
+Pot                     Expires November 3, 2019                [Page 3]
 
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
+Internet-Draft    HTTP-client suggested Push Preference         May 2019
 
 
 5.  Using with "preload" relationship types
@@ -221,9 +221,9 @@ Internet-Draft    HTTP-client suggested Push Preference    December 2018
 
 
 
-Pot                       Expires June 5, 2019                  [Page 4]
+Pot                     Expires November 3, 2019                [Page 4]
 
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
+Internet-Draft    HTTP-client suggested Push Preference         May 2019
 
 
 8.  Acknowledgements
@@ -277,9 +277,9 @@ Appendix A.  Example
 
 
 
-Pot                       Expires June 5, 2019                  [Page 5]
+Pot                     Expires November 3, 2019                [Page 5]
 
-Internet-Draft    HTTP-client suggested Push Preference    December 2018
+Internet-Draft    HTTP-client suggested Push Preference         May 2019
 
 
    HTTP/1.1 200 OK
@@ -333,4 +333,4 @@ Author's Address
 
 
 
-Pot                       Expires June 5, 2019                  [Page 6]
+Pot                     Expires November 3, 2019                [Page 6]
